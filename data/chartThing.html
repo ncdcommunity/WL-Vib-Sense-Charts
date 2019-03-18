@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<head>
+   <meta charset="utf-8" />
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+</head>
+<body>
+<div align="center"><h1>Vibration Analysis</h1></div> 
+<div id="line_top_x"></div>
+<script>
+google.charts.load('current', {'packages':['line','controls', 'corechart']});
+google.charts.setOnLoadCallback(draw);
+var data, chart;
+var cnt = 0;
+var points = 14;
+var got = 0;
+//var options = {'title':'Vibration Analysis',
+  //                     'width':768,
+    //                   'height':500};
+					   
+var options = {
+        hAxis: {
+          title: 'Time'
+        },
+        vAxis: {
+          title: 'RMS values'
+        }
+      };					   
+//var opt = {
+  //  hAxis: {
+   //     title:'Time'
+   // },s
+   // vAxis: {
+   //     title:'Vibration'
+   // }
+//};    
+function draw(){
+    data = new google.visualization.DataTable();
+    chart = new google.visualization.LineChart(document.getElementById('line_top_x'));
+    data.addColumn('string','Time');
+    data.addColumn('number','RMSX');
+    data.addColumn('number','RMSY');
+    data.addRows([
+        [null,0,0]
+    ]);
+	chart.draw(data, options);
+	if(got == 0){
+        got = 1;
+        $.get("/dht22", function(j, s){
+            cnt ++;
+            var cur = new Date(Date.now()).toLocaleTimeString();
+			var rmsx = j.rmsx;
+			var rmsy = j.rmsy;
+			//var date = cur.getMinutes + ":" + cur.getSeconds;
+			//console.log(cur);
+            //data.addRows([[cur.getMinutes() + ":" + cur.getSeconds(), j.rmsx, j.rmsy]]);
+			console.log(data.addRows([
+			[cur,rmsx,rmsy]
+			]));
+			console.log(rmsx);
+			console.log(rmsy);
+			console.log(s);
+			
+            if(cnt == points){
+                for (i = 0; i < points/2; i++) {
+                    data.removeRow(i);
+                }
+                cnt = i;
+            }
+            got = 0;
+            chart.draw(data, options);
+     });
+    }else{
+        got ++;
+        if(got == points/3){
+            got = 0;        
+        }
+    }
+}
+
+function update() {
+    
+    if(got == 0){
+        got = 1;
+        $.get("/dht22", function(j, s){
+            cnt ++;
+            var cur = new Date(Date.now()).toLocaleTimeString();
+			var rmsx = j.rmsx;
+			var rmsy = j.rmsy;
+			//var date = cur.getMinutes + ":" + cur.getSeconds;
+			//console.log(cur);
+            //data.addRows([[cur.getMinutes() + ":" + cur.getSeconds(), j.rmsx, j.rmsy]]);
+			console.log(data.addRows([
+			[cur,rmsx,rmsy]
+			]));
+			console.log(rmsx);
+			console.log(rmsy);
+			console.log(s);
+			
+            if(cnt == points){
+                for (i = 0; i < points/2; i++) {
+                    data.removeRow(i);
+                }
+                cnt = i;
+            }
+            got = 0;
+            chart.draw(data, options);
+     });
+    }else{
+        got ++;
+        if(got == points/3){
+            got = 0;        
+        }
+    }  
+}
+setInterval(update, 1000);
+</script>
+</body>
+</html>
