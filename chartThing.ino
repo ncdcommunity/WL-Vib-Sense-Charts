@@ -10,8 +10,8 @@
 #define TXD2 17
 
 
-const char* ssid = "Dcube_web";
-const char* password = "D@123456";
+const char* ssid = "Enter WiFi's SSID";
+const char* password = "Enter WiFi's password";
 
 
 //--------- Temp parameters------------//
